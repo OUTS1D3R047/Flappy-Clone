@@ -1,2 +1,3 @@
 # Flappy Clone
- My second game project, aimed to improve my gameplay programming skills
+This is my second game project, aimed to improve my gameplay programming skills  
+All game scripts are located in the Scripts folder.
