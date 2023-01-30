@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Increment
+  - Obstacle
+  - Spawner
+  - GameOverPanel
   layers:
   - Default
   - TransparentFX

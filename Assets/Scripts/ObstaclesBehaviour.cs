@@ -5,23 +5,30 @@ using UnityEngine;
 public class ObstaclesBehaviour : MonoBehaviour
 {
     private Rigidbody2D rootObstacleRB;
-    private Quaternion defaultObstacleRot;
 
 
     [SerializeField] private float speed;
+
+    public float speedPub
+    {
+        get 
+        { 
+            return speed; 
+        }
+        set 
+        {
+            speed = value;
+        }
+    }
 
     void Start()
     {
         rootObstacleRB = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
-    {
-        rootObstacleRB.velocity = new Vector2(-speed, 0);
-    }
-
     private void FixedUpdate()
     {
+        rootObstacleRB.velocity = new Vector2(-speed, 0);
 
         if (this.transform.position.x < -15f)
         {
