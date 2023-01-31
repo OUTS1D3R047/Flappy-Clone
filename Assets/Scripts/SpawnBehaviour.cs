@@ -5,8 +5,7 @@ using UnityEngine;
 public class SpawnBehaviour : MonoBehaviour
 {
     [SerializeField] private GameObject obstacle;
-    [SerializeField] private float timeBetweenSpawn;
-    [SerializeField] private float elapsedTime;
+    [SerializeField] private float timeBetweenSpawn, elapsedTime, scale;
 
     private float variance;
     private Vector3 spawnPos;

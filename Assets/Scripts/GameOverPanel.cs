@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class GameOverPanel : MonoBehaviour
 {
-    private GameObject gameOverPanel;
+    [SerializeField] private GameObject gameOverPanel;
     private IEnumerable<Transform> gameOverPanelItems;
 
     void Start()
     {
-        gameOverPanel = GameObject.FindGameObjectWithTag("GameOverPanel");
         gameOverPanelItems = gameOverPanel.GetComponentsInChildren<Transform>().Skip(1);
         this.manageGameOverPanel(false);        
     }
