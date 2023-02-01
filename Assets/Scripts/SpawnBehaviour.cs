@@ -5,7 +5,8 @@ using UnityEngine;
 public class SpawnBehaviour : MonoBehaviour
 {
     [SerializeField] private GameObject obstacle;
-    [SerializeField] private float timeBetweenSpawn, elapsedTime, scale;
+    [SerializeField] private GameObject gamePanel;
+    [SerializeField] private float timeBetweenSpawn, elapsedTime, scale, varianceScale;
 
     private float variance;
     private Vector3 spawnPos;
@@ -18,16 +19,18 @@ public class SpawnBehaviour : MonoBehaviour
 
     public void obstacleSpawn()
     {
-        variance = Random.Range(-3f, 3f);
-        spawnPos = this.gameObject.transform.position;
+        variance = Random.Range(-varianceScale, varianceScale);
+        spawnPos = this.gameObject.transform.localPosition;
 
         Vector3 obstaclePos = new Vector3(spawnPos.x, variance, spawnPos.z);
         Quaternion obstacleRot = this.transform.rotation;
 
-        Instantiate(obstacle, obstaclePos, obstacleRot);
+        GameObject obstacleClone = Instantiate(obstacle, obstaclePos, obstacleRot);
+        obstacleClone.transform.SetParent(gamePanel.transform, false);
+        obstacleClone.transform.localScale = new Vector3(scale, scale, scale);
     }
 
-    void Update()
+    void FixedUpdate()
     {
 
         elapsedTime += Time.deltaTime;
