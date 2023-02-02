@@ -19,7 +19,7 @@ public class PlayerControls : MonoBehaviour
     {
         playerControl = GetComponent<Rigidbody2D>();
 
-        if(Input.GetKeyDown(button))
+        if(Input.GetKeyDown(button) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
             playerControl.velocity = new Vector2(0, 2) * speed;
         }
