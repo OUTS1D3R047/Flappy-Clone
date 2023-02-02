@@ -6,16 +6,29 @@ using UnityEngine.SceneManagement;
 
 public class PanelManager : MonoBehaviour
 {
-    [SerializeField] private GameObject gameOverPanel, gamePanel, pausePanel, otherGamePanel;
+    [SerializeField] private GameObject gameOverPanel, gamePanel, pausePanel, otherGamePanel, mainMenuPanel, returnButton, statisticsPanel, aboutPanel;
 
-    private IEnumerable<Transform> gameOverPanelItems, gamePanelItems, pausePanelItems, otherGamePanelItems;
+    private IEnumerable<Transform> gameOverPanelItems, gamePanelItems, pausePanelItems, otherGamePanelItems, 
+                                   mainMenuPanelItems, statisticsPanelItems, aboutPanelItems;
     private List<Transform> panelList = new List<Transform>();
+
+    private Transform returnButtonComponent;
+    
+    private SaveStatistics saveStatistics;
+
+    private static bool restarted = false;
 
     protected void Start()
     {
         this.initPanels();
         this.initPanelList();
-        this.startGame();
+        this.mainMenu();
+
+        if(restarted)
+		{
+            this.startGame();
+            restarted = false;
+		}
     }
 
     protected void initPanels()
@@ -24,6 +37,12 @@ public class PanelManager : MonoBehaviour
         gameOverPanelItems = gameOverPanel.GetComponentsInChildren<Transform>().Skip(1);
         pausePanelItems = pausePanel.GetComponentsInChildren<Transform>().Skip(1);
         otherGamePanelItems = otherGamePanel.GetComponentsInChildren<Transform>().Skip(1);
+        mainMenuPanelItems = mainMenuPanel.GetComponentsInChildren<Transform>().Skip(1);
+        statisticsPanelItems = statisticsPanel.GetComponentsInChildren<Transform>().Skip(1);
+        aboutPanelItems = aboutPanel.GetComponentsInChildren<Transform>().Skip(1);
+        returnButtonComponent = returnButton.GetComponent<Transform>();
+
+        saveStatistics = this.gameObject.GetComponent<SaveStatistics>();
     }
 
     protected void initPanelList()
@@ -32,6 +51,10 @@ public class PanelManager : MonoBehaviour
         panelList.AddRange(gameOverPanelItems);
         panelList.AddRange(pausePanelItems);
         panelList.AddRange(otherGamePanelItems);
+        panelList.AddRange(mainMenuPanelItems);
+        panelList.AddRange(statisticsPanelItems);
+        panelList.AddRange(aboutPanelItems);
+        panelList.Add(returnButtonComponent);
     }
 
     protected void hidePanels(IEnumerable<Transform> _panel)
@@ -50,8 +73,14 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    public void startGame()
+    public void mainMenu()
     {
+        this.hidePanels(panelList);
+        this.enablePanels(mainMenuPanelItems);
+    }
+
+    public void startGame()
+	{
         this.hidePanels(panelList);
         this.enablePanels(gamePanelItems);
     }
@@ -80,14 +109,32 @@ public class PanelManager : MonoBehaviour
 
     public void restart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        this.startGame();
         Time.timeScale = 1;
+        restarted = true;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void exit()
-    { 
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        this.enablePanels(mainMenuPanelItems);
+        Time.timeScale = 1;
     }
 
+    public void statistics()
+	{
+        this.hidePanels(mainMenuPanelItems);
+        this.enablePanels(statisticsPanelItems);
+        returnButtonComponent.gameObject.SetActive(true);
+        
+        saveStatistics.outputStatistics();
+	}
+
+    public void about()
+	{
+        this.hidePanels(mainMenuPanelItems);
+        this.enablePanels(aboutPanelItems);
+        returnButtonComponent.gameObject.SetActive(true);
+    }
 
 }

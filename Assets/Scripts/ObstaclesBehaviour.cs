@@ -7,7 +7,7 @@ public class ObstaclesBehaviour : MonoBehaviour
     private Rigidbody2D rootObstacleRB;
 
 
-    [SerializeField] private float speed, destroyPos;
+    [SerializeField] protected float speed, destroyPos;
 
     public float speedPub
     {
@@ -28,6 +28,11 @@ public class ObstaclesBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
+        this.objectBehaviour();
+    }
+
+    protected void objectBehaviour()
+	{
         rootObstacleRB.velocity = new Vector2(-speed, 0);
 
         if (this.transform.position.x < destroyPos)

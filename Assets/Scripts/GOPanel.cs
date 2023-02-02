@@ -15,7 +15,7 @@ public class GOPanel : MonoBehaviour
     private PlayerControls playerControls;
     private SpawnBehaviour spawnBehaviour;
 
-    private void Start()
+    private void Awake()
     {
         this.initObjects();
     }
