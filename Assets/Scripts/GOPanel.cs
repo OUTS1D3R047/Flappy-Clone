@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class GOPanel : MonoBehaviour
 {
-    [SerializeField] private GameObject player, spawner, panelManagerGO;
+    [SerializeField] private GameObject player, spawner, panelManagerGO, guideTMP;
     [SerializeField] private TextMeshPro scoreValueTM;
+    [SerializeField] private TextMeshProUGUI highScoreTMP;
     [SerializeField] private string saveValueName;
 
     private ObstaclesBehaviour obstaclesBehaviour;
@@ -42,12 +43,15 @@ public class GOPanel : MonoBehaviour
             }
 
             obstaclesBehaviour.speedPub = _speed;
+
+            highScoreTMP.text = PlayerPrefs.GetInt("RecordValue").ToString();
         }
 
         playerControls.enabled = _disable;
         spawnBehaviour.enabled = _disable;
+        guideTMP.SetActive(_disable);
 
-        Debug.Log(PlayerPrefs.GetInt(saveValueName));
+        
     }
 
     private void checkIfRecord()

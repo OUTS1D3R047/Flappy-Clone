@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class GuideBehaviour : ObstaclesBehaviour
 {
-    [SerializeField] private float guideSpeed, guideDestroyPos;
+    [SerializeField] private float guideSpeed;
 
-	private void FixedUpdate()
+    private IEnumerator Delay()
+    {
+        speed = 0;
+        yield return new WaitForSecondsRealtime(1f);
+        speed = guideSpeed;
+    }
+
+    public void parmDelay()
 	{
-		if(PlayerPrefs.GetInt("MatchesPlayed") == 0)
-		{
+        this.gameObject.SetActive(true);
+        StartCoroutine(this.Delay());
+    }
 
-		}
-
+    private void FixedUpdate()
+	{
+        this.objectBehaviour(speed);
 	}
 
 }

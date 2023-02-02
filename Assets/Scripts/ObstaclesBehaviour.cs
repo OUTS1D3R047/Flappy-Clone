@@ -28,12 +28,12 @@ public class ObstaclesBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        this.objectBehaviour();
+        this.objectBehaviour(speed);
     }
 
-    protected void objectBehaviour()
+    protected void objectBehaviour(float _speed)
 	{
-        rootObstacleRB.velocity = new Vector2(-speed, 0);
+        rootObstacleRB.velocity = new Vector2(-_speed, 0);
 
         if (this.transform.position.x < destroyPos)
         {

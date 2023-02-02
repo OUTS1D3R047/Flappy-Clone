@@ -6,15 +6,15 @@ using UnityEngine.SceneManagement;
 
 public class PanelManager : MonoBehaviour
 {
-    [SerializeField] private GameObject gameOverPanel, gamePanel, pausePanel, otherGamePanel, mainMenuPanel, returnButton, statisticsPanel, aboutPanel;
+    [SerializeField] private GameObject gameOverPanel, gamePanel, pausePanel, otherGamePanel, mainMenuPanel, returnButton, statisticsPanel, aboutPanel, guideTMP, pauseButton;
 
     private IEnumerable<Transform> gameOverPanelItems, gamePanelItems, pausePanelItems, otherGamePanelItems, 
                                    mainMenuPanelItems, statisticsPanelItems, aboutPanelItems;
-    private List<Transform> panelList = new List<Transform>();
-
-    private Transform returnButtonComponent;
     
+    private List<Transform> panelList = new List<Transform>();
+    private Transform returnButtonComponent;
     private SaveStatistics saveStatistics;
+    private GuideBehaviour guideBehaviour;
 
     private static bool restarted = false;
 
@@ -28,7 +28,9 @@ public class PanelManager : MonoBehaviour
 		{
             this.startGame();
             restarted = false;
-		}
+            guideBehaviour.parmDelay();
+
+        }
     }
 
     protected void initPanels()
@@ -43,6 +45,7 @@ public class PanelManager : MonoBehaviour
         returnButtonComponent = returnButton.GetComponent<Transform>();
 
         saveStatistics = this.gameObject.GetComponent<SaveStatistics>();
+        guideBehaviour = guideTMP.GetComponent<GuideBehaviour>();
     }
 
     protected void initPanelList()
@@ -90,6 +93,7 @@ public class PanelManager : MonoBehaviour
         this.enablePanels(otherGamePanelItems);
         this.enablePanels(gameOverPanelItems);
         this.hidePanels(pausePanelItems);
+        pauseButton.gameObject.SetActive(false);
     }
 
     public void pause()
