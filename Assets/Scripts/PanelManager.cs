@@ -7,11 +7,9 @@ using UnityEngine.SceneManagement;
 public class PanelManager : MonoBehaviour
 {
     [SerializeField] private GameObject gameOverPanel, gamePanel, pausePanel, otherGamePanel, mainMenuPanel, returnButton, statisticsPanel, aboutPanel, guideTMP, pauseButton;
+    [SerializeField] private GameObject[] panels;
 
-    private IEnumerable<Transform> gameOverPanelItems, gamePanelItems, pausePanelItems, otherGamePanelItems, 
-                                   mainMenuPanelItems, statisticsPanelItems, aboutPanelItems;
-    
-    private List<Transform> panelList = new List<Transform>();
+    private Dictionary<string, IEnumerable<Transform>> panelList = new Dictionary<string, IEnumerable<Transform>>();
     private Transform returnButtonComponent;
     private SaveStatistics saveStatistics;
     private GuideBehaviour guideBehaviour;
@@ -21,10 +19,9 @@ public class PanelManager : MonoBehaviour
     protected void Start()
     {
         this.initPanels();
-        this.initPanelList();
-        this.mainMenu();
+        this.switchPanels(mainMenuPanel);
 
-        if(restarted)
+        if (restarted)
 		{
             this.startGame();
             restarted = false;
@@ -35,110 +32,108 @@ public class PanelManager : MonoBehaviour
 
     protected void initPanels()
     {
-        gamePanelItems = gamePanel.GetComponentsInChildren<Transform>().Skip(1);
-        gameOverPanelItems = gameOverPanel.GetComponentsInChildren<Transform>().Skip(1);
-        pausePanelItems = pausePanel.GetComponentsInChildren<Transform>().Skip(1);
-        otherGamePanelItems = otherGamePanel.GetComponentsInChildren<Transform>().Skip(1);
-        mainMenuPanelItems = mainMenuPanel.GetComponentsInChildren<Transform>().Skip(1);
-        statisticsPanelItems = statisticsPanel.GetComponentsInChildren<Transform>().Skip(1);
-        aboutPanelItems = aboutPanel.GetComponentsInChildren<Transform>().Skip(1);
-        returnButtonComponent = returnButton.GetComponent<Transform>();
+        foreach (GameObject _panel in panels)
+        {
+            panelList.Add(_panel.name, _panel.GetComponentsInChildren<Transform>().Skip(1));
+        }
 
         saveStatistics = this.gameObject.GetComponent<SaveStatistics>();
         guideBehaviour = guideTMP.GetComponent<GuideBehaviour>();
     }
 
-    protected void initPanelList()
+    protected void switchPanels(GameObject _panel)
     {
-        panelList.AddRange(gamePanelItems);
-        panelList.AddRange(gameOverPanelItems);
-        panelList.AddRange(pausePanelItems);
-        panelList.AddRange(otherGamePanelItems);
-        panelList.AddRange(mainMenuPanelItems);
-        panelList.AddRange(statisticsPanelItems);
-        panelList.AddRange(aboutPanelItems);
-        panelList.Add(returnButtonComponent);
-    }
-
-    protected void hidePanels(IEnumerable<Transform> _panel)
-    {
-        foreach (Transform _panelItem in _panel)
+        foreach (KeyValuePair<string, IEnumerable<Transform>> _panelItemDict in panelList)
         {
-            _panelItem.gameObject.SetActive(false);
+            if (_panelItemDict.Key == _panel.name)
+            {
+                this.switchPanelItems(_panelItemDict.Value, true);
+            }
+
+            else
+            {
+                foreach (Transform _panelItem in _panelItemDict.Value)
+                {
+                    this.switchPanelItems(_panelItemDict.Value, false);
+                }
+            }
         }
     }
 
-    protected void enablePanels(IEnumerable<Transform> _panel)
+    protected void switchPanelItems(IEnumerable<Transform> _panelItemDictVal, bool _enable)
     {
-        foreach (Transform _panelItem in _panel)
+        foreach (Transform _panelItem in _panelItemDictVal)
         {
-            _panelItem.gameObject.SetActive(true);
+            _panelItem.gameObject.SetActive(_enable);
         }
     }
 
-    public void mainMenu()
+    protected void switchFromMenu(GameObject _panel)
     {
-        this.hidePanels(panelList);
-        this.enablePanels(mainMenuPanelItems);
+        this.switchPanels(_panel);
+        this.enableRetButton();
     }
 
-    public void startGame()
+	protected void enableRetButton()
 	{
-        this.hidePanels(panelList);
-        this.enablePanels(gamePanelItems);
+		this.switchPanelItems(panelList[returnButton.name], true);
+	}
+
+    protected void pauseGameOver(GameObject _panel)
+	{
+        this.switchPanelItems(panelList[otherGamePanel.name], true);
+        this.switchPanelItems(panelList[_panel.name], false);
+    }
+
+	public void startGame()
+	{
+		this.switchPanels(gamePanel);
+	}
+
+    public void statistics()
+    {
+        this.switchFromMenu(statisticsPanel);
+
+        saveStatistics.outputStatistics();
+    }
+
+    public void about()
+    {
+        this.switchFromMenu(aboutPanel);
     }
 
     public void gameOver()
-    {
-        this.enablePanels(otherGamePanelItems);
-        this.enablePanels(gameOverPanelItems);
-        this.hidePanels(pausePanelItems);
+	{
+        this.pauseGameOver(pausePanel);
         pauseButton.gameObject.SetActive(false);
-    }
-
-    public void pause()
-	{
-        this.enablePanels(otherGamePanelItems);
-        this.hidePanels(gameOverPanelItems);
-        this.enablePanels(pausePanelItems);
-        Time.timeScale = 0;
-    }
-
-    public void resume()
-	{
-        this.hidePanels(pausePanelItems);
-        this.hidePanels(otherGamePanelItems);
-        Time.timeScale = 1;
-    }
-
-    public void restart()
-    {
-        Time.timeScale = 1;
-        restarted = true;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void exit()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        this.enablePanels(mainMenuPanelItems);
-        Time.timeScale = 1;
-    }
-
-    public void statistics()
-	{
-        this.hidePanels(mainMenuPanelItems);
-        this.enablePanels(statisticsPanelItems);
-        returnButtonComponent.gameObject.SetActive(true);
-        
-        saveStatistics.outputStatistics();
 	}
 
-    public void about()
+	public void pause()
 	{
-        this.hidePanels(mainMenuPanelItems);
-        this.enablePanels(aboutPanelItems);
-        returnButtonComponent.gameObject.SetActive(true);
-    }
+        this.pauseGameOver(gameOverPanel);
+        Time.timeScale = 0;
+	}
+
+	public void resume()
+	{
+        this.switchPanelItems(panelList[otherGamePanel.name], false);
+        Time.timeScale = 1;
+	}
+
+	public void restart()
+	{
+		Time.timeScale = 1;
+		restarted = true;
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+	}
+
+	public void exit()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        this.switchPanels(mainMenuPanel);
+		Time.timeScale = 1;
+	}
+
+	
 
 }
